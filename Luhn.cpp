@@ -1,64 +1,84 @@
-#include <cstdlib>
+#include "Luhn.h"
 #include <iostream>
 #include <string>
 
-using namespace std;
 
-void luhn(string numbers)
+using namespace std;
+Luhn::Luhn()
+{
+	account = "";
+	lastDigit = 0;
+	checkDigit = 0;
+}
+
+Luhn::~Luhn()
+{}
+
+bool Luhn::check(string numbers)
 {
 	//initalize varibles
-    int len = numbers.length();
-	int total = 0;
-    int num, checkDigit;
+	string tmp, lDigit;
+	int num;
+
+	tmp = numbers;
+	lDigit = numbers.at(numbers.length()-1);
+	lastDigit = atoi(lDigit.c_str());
+	cout << "ldigit:"<< lDigit << endl;
+	tmp.erase(numbers.length()-1, numbers.length());
+	cout << "tmp :" << tmp << endl;
+	num = generateCheckDigit(tmp);
+	cout << "num " << num << "checkdigit " <<checkDigit << endl;
+	return (num == lastDigit);
+}
+void Luhn::recursiveAppend(string numbers, int size)
+{
+	if(numbers.length() == size)
+		return;
+	
+
+
+}
+int Luhn::getCheckDigit()
+{
+	return checkDigit;
+}
+
+int Luhn::generateCheckDigit(string numbers)
+{
+	//initalize varibles
 	string tmp;
+	int num, total = 0;
 
-	//loop through each value
-    for(int i=0; i<len-1; i++)
-    {
-		//get a single letter
-        tmp = numbers.at(i);
-        
-		//convert to int
+	//reverse the numbers
+	reverse(numbers.begin(), numbers.end());
+
+	//iterate through and calculate
+	for(int i=0; i<numbers.length(); i++)
+	{
+		//convert string to int
+		tmp = numbers[i];
 		num = atoi(tmp.c_str());
-
-		//logic checks
-        if((i+1)%2 == 0) {
-            if(num > 4) {
+		
+		//logic
+		if(i%2 == 0)
+		{
+			if(num > 4) {
                 num = (num - 5) * 2 + 1;
             } else {
                 num *= 2;
             }
-        }
+		}
 
-		//keep a running total
+		//keep running total
 		total += num;
-    }
-
-	//calculate the check digit
-	checkDigit = (10-total%10);
-
-	//get last digit and convert to int
-	tmp = numbers.at(len-1);
-	num = atoi(tmp.c_str());
-
-	//check if last digit is same as the check digit
-	if(num == checkDigit)
-		cout << "CORRECT" << endl;
-
-}
-
-int main(int argc, char** argv) {
-    string numbers;
-    cout << "Enter Account Number or -1 to quit: ";
-    cin >> numbers;
-    
-	while(numbers != "-1")
-    {
-		luhn(numbers);
-		cout << endl;
-		cout << "Enter Account Number or -1 to quit: ";
-		cin >> numbers;
 	}
 
-    return 0;
+	checkDigit = (total*9)%10;
+
+	return checkDigit;
+}
+
+char randDigit()
+{
+	return rand()%10+48;
 }
